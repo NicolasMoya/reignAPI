@@ -9,6 +9,9 @@ import { DataService } from 'src/services/data/data.service';
 import { Arcticle } from 'src/entities/arcticle.entity';
 import { Tags } from 'src/entities/tags.entity';
 import { ArcticleTags } from 'src/entities/arcticletags.entity';
+import { ArcticlesController } from 'src/controllers/arcticles.controller';
+import { ArcticlesService } from 'src/services/arcticles/arcticles.service';
+import { ScheduleModule } from '@nestjs/schedule';
 
 
 @Module({
@@ -28,8 +31,9 @@ import { ArcticleTags } from 'src/entities/arcticletags.entity';
       Arcticle,
       Tags,
       ArcticleTags
-    ])],
-  controllers: [AppController, CronjobsController],
-  providers: [AppService, DataService],
+    ]),
+    ScheduleModule.forRoot(),],
+  controllers: [AppController, CronjobsController, ArcticlesController],
+  providers: [AppService, DataService, ArcticlesService],
 })
 export class AppModule {}

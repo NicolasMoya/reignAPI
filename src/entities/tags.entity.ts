@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { ArcticleTags } from './arcticletags.entity';
+
 
 @Entity({ name: 'tags' })
 export class Tags {
@@ -11,5 +13,10 @@ export class Tags {
 
   @Column()
   created_date: string;
+
+  // join columns
+  @OneToMany(type => ArcticleTags, arcticleTags => arcticleTags.tags)
+  tagarc: ArcticleTags[];
+
 
 }

@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import {  firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import {Arcticle} from 'src/entities/arcticle.entity';
 import {Tags} from 'src/entities/tags.entity';
 import {ArcticleTags} from 'src/entities/arcticletags.entity';
-// import {ArcticleRepository} from 'src/repositories/arcticle.repository';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DateTime } from 'luxon';
@@ -20,26 +19,28 @@ export class DataService {
     @InjectRepository(ArcticleTags) private arcticleTagsRepository: Repository<ArcticleTags>,
     private http: HttpService) {}
 
-    async getHello() {
   
-      // const response = await this.http.get('https://hn.algolia.com/api/v1/search_by_date?query=nodejs').toPromise();
-      // return await response.data;
+    async addData(url: string) {
   
-      return  await firstValueFrom(this.http.get(`https://hn.algolia.com/api/v1/search_by_date?query=nodejs`))
+      // get the data from url and register every value in the database
+      return  await firstValueFrom(this.http.get(url))
       .then(response => {
         response.data.hits.forEach(arcticle => {
           this.registerArcticle(arcticle);
-          // Logger.log(arcticle)
+          
         });
-        return response.data.hits;
+        return 'Cronjob Done';
       })
       .catch(err => {}  );
 
     }
 
+
+    // get the important data fron arcticles and register in the database
     async registerArcticle(incomingArcticle: any) {
 
         const newArcticle = new Arcticle();
+        // in case title is null get story title
         if(incomingArcticle.title){
           newArcticle.title = incomingArcticle.title;
         }else{
@@ -53,52 +54,58 @@ export class DataService {
         newArcticle.is_public = true;
         await this.arcticleRepository.save(newArcticle)
         .then(async res => {
-          Logger.log('Ingreso Exitoso: ' + newArcticle.id);
+          Logger.log('Success register: ' + newArcticle.id);
+          // if the arcticle in the database this will enter all their tags
           await this.registerTags(incomingArcticle._tags, newArcticle.id);
         })
         .catch(err => {
-          Logger.log(err+ ' Error al ingresar: ' + newArcticle.external_id);
+          Logger.error(err+ ' external_code: ' + newArcticle.external_id);
         });
         
     }
 
 
+    // function that register the incoming tags
     async registerTags(incomingTags: any, Arcticle_id: number) {
 
       await incomingTags.forEach(async  tag => {
+        // search if the tag is created in the database
         await this.tagsRepository.findOne({where: {name: tag}}).then(async findedtag  => {
-          Logger.log('Tag encontrado: ' + JSON.stringify(findedtag)); 
+          // if is not finded in the database it will register 
           if(!findedtag){
             const newTag = new Tags();
             newTag.name = tag;
             newTag.created_date = DateTime.now().toISO();
             await this.tagsRepository.save(newTag)
             .then(async res => {
-              Logger.log('Ingreso Exitoso de tag: ' + newTag.id);
+              Logger.log('register tag success: ' + newTag.id);
+              // asociate the tag in the arcticle
               await this.registerArcticleTags(newTag.id, Arcticle_id);
             })
             .catch(err => {
-              Logger.error(err+ ' Error al ingresar tag: ' + newTag.name);
+              Logger.error(err+ ' tag id: ' + newTag.name);
             });
           }else{
+            // asociate the finded tag in the arcticle
             await this.registerArcticleTags(findedtag.id, Arcticle_id);
           }
         }).catch(err => {
-          Logger.error(err+ ' Error al buscar ');
+          Logger.error(err);
         } );
       });
       
     }
 
+    // function that register the asociation between the arcticle and the tag
     async registerArcticleTags(tag_id: number, arcticle_id: number) {
 
         const newArcticleTags = new ArcticleTags();
-        newArcticleTags.arcticle_id = arcticle_id;
-        newArcticleTags.tag_id = tag_id;
+        newArcticleTags.arcticleId = arcticle_id;
+        newArcticleTags.tagsId = tag_id;
         await this.arcticleTagsRepository.save(newArcticleTags).then(res => {
-          Logger.log('Ingreso Exitoso de ArcticleTags: ' + newArcticleTags.id);
+          Logger.log(res);
         }).catch(err => {
-          Logger.error(err+ ' Error al ingresar ArcticleTags: ' + newArcticleTags.id);
+          Logger.error(err+ ' id: ' + newArcticleTags.id);
         } );
     }
 
