@@ -1,73 +1,62 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# API Reign Test
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This is a project to enter to Reign as a Software developer.
+This Project is made with database PostgreSQL,  NestJS as a framework and code in Typescript 
 
-## Description
+##First step
+First we have to clone the repository:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+```bash
+$ git clone git@
+```
 
-## Installation
+
+
+## DataBase (PostgreSQL)
+
+in order to start this project we have to get a Mysql Database with PostgreSQL as main. Inside the folder "resources" we have a file called "dump-Reign_DB" this one is a dump database that contains the 3 tables used in the sistem "arcticle", "arcticle_tags", "tags" and some  data previously filled.
+To run this dump file we have to execute
+
+```bash
+$ psql databasename < dump-Reign_DB
+```
+
+
+## Nest PROJECT CONFIG
+
+we have to install all the npm libraries:
 
 ```bash
 $ npm install
 ```
 
-## Running the app
+to execute the project we have to enter:
 
 ```bash
-# development
 $ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
-## Test
+### config file
 
-```bash
-# unit tests
-$ npm run test
+inside the proyect in src/config.ts we have to configure the parameters of the server in order to work, the parameters are the next
 
-# e2e tests
-$ npm run test:e2e
+- DB_HOST: Host of the Database
+- DB_PORT: Port of the database
+- DB_NAME: Name of the database
+- DB_USER: User name
+- DB_PASS: Password of the db User
+- API_URL: API to recolect the data (in this case https://hn.algolia.com/api/v1/search_by_date?query=nodejs)
 
-# test coverage
-$ npm run test:cov
-```
 
-## Support
+##API Test
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+to test the working API, there is a file inside resources called "Reign test API.postman_collection", this is a JSON with 5 Requests already tested in the server. this one are:
 
-## Stay in touch
+- Delete Arcticle (DELETE): Request that change the arcticle parameter "is_public" to false (this one is because the arcticle can't re enter)
+- Get all Arcticles (GET): Request that return all the arcticles, the page paremeter can change to have more records
+- Get Arcticle with title Filter (GET): Request that return a request based on the title (it's not a full filter, so incomplete titles works too)
+- Get Arcticle with author Filter (GET): Request that return a request based on the author
+- Get Arcticle with tag Filter (GET): Request that return a request based on the Tag
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+All the GET request can use all the parameters to filter data 
